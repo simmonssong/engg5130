@@ -201,8 +201,7 @@ def normalize_numerical():
     # keep feature names
     for (col_index, col_name) in enumerate(list(data_c.columns)):
         data_c[col_name] = tmp[:, col_index]
-        print(col_name)
-        box_fig_numerical(tmp[:, col_index], data_o.loc[:, col_name], col_name)
+        # box_fig_numerical(tmp[:, col_index], data_o.loc[:, col_name], col_name)
         
     print(data_c.shape)
 
