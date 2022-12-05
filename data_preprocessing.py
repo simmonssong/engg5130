@@ -134,21 +134,16 @@ attributes_categorical = ['horse_country', 'horse_type',
                        'horse_gear','venue', 'config','going','surface','race_class']
 
 attributes_numerical = ['horse_age','horse_rating', 'declared_weight',
-                     'actual_weight','draw', 'win_odds', 'place_odds', 'distance', "mean_temp", "mean_amount_of_cloud", "pressure", "RH"]
+                     'actual_weight','draw', 'win_odds', 'place_odds', 'distance'
+                     , "mean_temp", "mean_amount_of_cloud", "pressure", "RH"]
+
+# , "mean_temp", "mean_amount_of_cloud", "pressure", "RH"
 
 final_all_attributes = ["won", "horse_age", "horse_country", "horse_type",
                          "horse_rating", "horse_gear", "declared_weight", "actual_weight", "draw", "win_odds", "place_odds", "venue", "config",
                          "surface", "distance", "going", "horse_ratings", "race_class", 
                          "mean_temp", "mean_amount_of_cloud", "pressure", "RH"]
 
-
-def check_row(final_attributes):
-    data = merge_data()
-    data = data[data["draw"] != 15]
-    data = data[final_attributes]
-
-
-# check_row()
 
 
 def encode_categorical():
@@ -157,7 +152,7 @@ def encode_categorical():
     data = data[final_all_attributes]
     data_c = data[attributes_categorical]
     data_c = pd.get_dummies(data_c.apply(lambda col: col.astype('category')))
-    print(data_c.shape)
+    # print(data_c.shape)
     # for c in attributes_categorical:
     #     data_c = data[[c]]
     #     data_c = pd.get_dummies(data_c.apply(lambda col: col.astype('category')))
@@ -188,6 +183,11 @@ def box_fig_numerical(data_a, data_o, attr):
     plt.close(2)
     
 
+def get_data():
+    data = merge_data()
+    data = data[data["draw"] != 15]
+    return data[final_all_attributes]
+
 
 def normalize_numerical():
     data = merge_data()
@@ -196,42 +196,36 @@ def normalize_numerical():
     data_o = data[attributes_numerical]
     data_c = data[attributes_numerical]
 
+    # print(data_c.head())
+
     ct = ColumnTransformer([], remainder=StandardScaler())
     tmp = ct.fit_transform(data_c)
     # keep feature names
     for (col_index, col_name) in enumerate(list(data_c.columns)):
-        data_c[col_name] = tmp[:, col_index]
+        data_c.loc[:, col_name] = tmp[:, col_index]
         # box_fig_numerical(tmp[:, col_index], data_o.loc[:, col_name], col_name)
         
-    print(data_c.shape)
+    # print(data_c.shape)
 
-    
+    # print(data_c.head())
     return data_c
 
 
-normalize_numerical()
+# normalize_numerical()
 
-def check_odds_distribution(data):
-    sns.set(style="ticks")
-    sns.set_style("darkgrid")
-    fig, ax = plt.subplots(1, 2, figsize=(16, 8))
-    sns.boxplot(x="won", y="win_odds", data=data, ax=ax[0])
-    ax[0].legend(loc='upper right')
-    ax[0].set_title(
-        "Win odds distribution for non-winners and winners", fontsize=14)
+# def check_odds_distribution(data):
+#     sns.set(style="ticks")
+#     sns.set_style("darkgrid")
+#     fig, ax = plt.subplots(1, 2, figsize=(16, 8))
+#     sns.boxplot(x="won", y="win_odds", data=data, ax=ax[0])
+#     ax[0].legend(loc='upper right')
+#     ax[0].set_title(
+#         "Win odds distribution for non-winners and winners", fontsize=14)
 
-    sns.boxplot(x="won", y="place_odds", data=data, ax=ax[1])
-    ax[1].set_title(
-        "Place odds boxplot for non-winners and winners", fontsize=14)
-    ax[1].set(ylim=(0, 40))
+#     sns.boxplot(x="won", y="place_odds", data=data, ax=ax[1])
+#     ax[1].set_title(
+#         "Place odds boxplot for non-winners and winners", fontsize=14)
+#     ax[1].set(ylim=(0, 40))
 
-    plt.savefig("results/win_place_odds_dist.png")
-    plt.close(2)
-
-
-def remove_inter_match_information(runs):
-    runs_data = runs[['race_id', 'won', 'horse_age', 'horse_country', 'horse_type', 'horse_rating',
-                      'horse_gear', 'declared_weight', 'actual_weight', 'draw', 'win_odds',
-                      'place_odds', 'horse_id']]
-
-    
+#     plt.savefig("results/win_place_odds_dist.png")
+#     plt.close(2)
